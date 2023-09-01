@@ -1,0 +1,149 @@
+openapi: 3.0.3
+
+info:
+  title: Reversed Garena League API (SG and TW Endpoint)
+  description: All api endpoints require bearer authentication token. SG API LINK CAN QUERY TW DATA MAYBE COUNTRY IS NOT IMPORTANT
+  version: 1.0.1
+
+servers:
+- url: https://ledge-sg.api.riotgames.com
+  description: SG Api for match-history-query, session-external
+- url: https://sg-blue.lol.sgp.pvp.net
+  description: SG Api for statstones, summoners-ledge,league-ledge, championmastery-ledge
+- url: https://ledge-tw.api.riotgames.com
+  description: TW Api for match-history-query, session-external
+- url: https://tw-blue.lol.sgp.pvp.net
+  description: TW Api for statstones, summoners-ledge,league-ledge, championmastery-ledge
+- url: http://ddragon.leagueoflegends.com
+  description: Api for Champ Info
+
+paths:
+
+  "/statstones/v1/players/{puuid}/profileStatstones?sort_by=DESC":
+    parameters:
+    - name: puuid # Must be same as the value in the {}.
+      # Location of the parameter.
+      # Can be `path`, `cookie`, `query` or `header`
+      in: path
+      description: puuid from /summoner-ledge/v1/regions/SG/summoners/name/{player_name}
+      # Since this is in the path, the parameter HAS to be required
+      required: true
+      # Defining the type of the parameter
+      schema:
+        # In this case, it is just a string
+        type: string
+    get:
+      summary: Eternals Info
+      responses:
+        "200":
+          description: Success
+  "/match-history-query/v1/products/lol/{MenuGameID}/DETAILS":
+    parameters:
+    - name: MenuGameID # Must be same as the value in the {}.
+      # Location of the parameter.
+      # Can be `path`, `cookie`, `query` or `header`
+      in: path
+      description: ID of League Match
+      # Since this is in the path, the parameter HAS to be required
+      required: true
+      # Defining the type of the parameter
+      schema:
+        # In this case, it is just a string
+        type: string
+    get:
+      summary: League Match Info
+      responses:
+        "200":
+          description: Success
+  "/match-history-query/v1/products/lol/player/{puuid}?startIndex=0&count={game_count}":
+    parameters:
+    - name: puuid
+      in: path
+      description: player id from /summoner-ledge/v1/regions/SG/summoners/name/{player_name}
+      required: true
+      schema:
+        type: string
+    - name: game_count
+      in: path
+      description: number of games u want returned (200 max)
+      required: true
+      schema:
+        type: number
+    get:
+      summary: List of games played
+      responses:
+        "200":
+          description: Success
+  "/summoner-ledge/v1/regions/SG/summoners/name/{player_name}":
+    parameters:
+    - name: player_name
+      in: path
+      description: ign of player
+      required: true
+      schema:
+        type: string
+    get:
+      summary: Return PUUID(PlayerID) Of Player Name if present
+      responses:
+        "200":
+          description: Returns PPUID, Account ID, IGN, ProfileIconID, Current Level and other stuff
+  "/leagues-ledge/v2/leagueLadders/puuid/{puuid}":
+    parameters:
+    - name: puuid
+      in: path
+      description: puuid from /summoner-ledge/v1/regions/SG/summoners/name/{player_name}
+      required: true
+      schema:
+        type: string
+    get:
+      summary: Returns Rank and LP of player
+      responses:
+        "200":
+          description: Returns Rank LP and current Rank Ladder
+  "/championmastery-ledge/player/{userID}/champions":
+    parameters:
+    - name: userID
+      in: path
+      description: userID from /summoner-ledge/v1/regions/SG/summoners/name/{player_name}
+      required: true
+      schema:
+        type: string
+    - name: AuthToken
+      in: query
+      description: Authentication Token
+      schema: 
+        type: string
+        default: \{"{AuthToken}"\}
+    post:
+      summary: Get Mastery points aquired by user
+      responses:
+        "200":
+          description: Returns Mastery Points And Level Of all champs played
+  "/session-external/v1/session/refresh":
+    parameters:
+    - name: AuthToken
+      in: query
+      description: Authentication Token
+      schema: 
+        type: string
+        default: \{"lst":"{AuthToken}"\}
+    post:
+      summary: Update Auth/Session Token
+      responses:
+        "200":
+          description: Returns New Auth Token
+  "/cdn/{patch_version}.1/data/en_US/champion.json":
+    parameters:
+    - name: patch_version
+      in: path
+      description: current patch version of league
+      required: true
+      schema:
+        type: string
+    get:
+      summary: Champion ID and basic data
+      responses:
+        "200":
+          description: Success
+        
+
